@@ -1,7 +1,7 @@
 pygodaddy
 ==========
 
-PyGoDaddy is a 3rd-party client library for manipulating GoDaddy DNS records, written in Python for site admins, to make GoDaddy suck less. 
+PyGoDaddy is a 3rd-party client library, written in Python, for site admins(devs), to make GoDaddy suck less. 
 
 Currently, Only A-Record manipulation is supported
 
@@ -9,7 +9,7 @@ Features
 --------
 
 - Login with a USERNAME and a PASSWORD
-- CREATE, READ, UPDATE, DELETE your domain's DNS Records
+- CREATE, READ, UPDATE, DELETE your domain's DNS Records (A-Record only for now)
 
 INSTALL
 -------
