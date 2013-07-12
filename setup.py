@@ -20,9 +20,9 @@ from distutils.core import setup
 
 setup(
     name='pygodaddy',
-    version = '0.1',
+    version = '0.1.1',
     description = '3rd Party Client Library for Manipulating Go Daddy DNS Records.',
-    long_description=open('README.md').read(),
+    long_description=open('README.rst').read()+'\n\n'+open('HISTORY.rst').read(),
     author = 'Jingchao Hu(observerss)',
     author_email = 'jingchaohu@gmail.com',
     packages = ['pygodaddy'],
