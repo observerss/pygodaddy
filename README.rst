@@ -35,7 +35,9 @@ QUICKSTART
 DOCS
 ----
 
-Please refer to `docstrings` and `tests`
+https://pygodaddy.readthedocs.org/
+
+Or you can always refer to ``docstrings`` and ``tests``
 
 
 TESTING
