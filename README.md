@@ -23,22 +23,25 @@ if client.login(username, password):
 
 DOCS
 ----
-  
-  - Please refer to docstrings and tests
+
+Please refer to docstrings and tests
 
 
 TESTING
 -------
 
-  - Create a file named `accounts.py`
-  - put settings in this file::
-    
-    accounts = [
-        {
-            'username': 'USERNAME',
-            'password': 'PASSWORD',
-            'test_domain': 'DOMAIN.NAME',
-        },
-    ]
+Create a file in `tests/accounts.py`
 
-  - run `nosetests tests` in root directory
+Put settings in this file
+ 
+```python 
+accounts = [
+    {
+        'username': 'USERNAME',
+        'password': 'PASSWORD',
+        'test_domain': 'DOMAIN.NAME',
+    },
+]
+```
+
+run `nosetests tests` in root directory
