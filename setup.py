@@ -20,15 +20,16 @@ from distutils.core import setup
 
 setup(
     name='pygodaddy',
-    version = '0.1.1',
+    version = '0.1.2',
     description = '3rd Party Client Library for Manipulating Go Daddy DNS Records.',
     long_description=open('README.rst').read()+'\n\n'+open('HISTORY.rst').read(),
+    url = 'https://github.com/observerss/pygodaddy',
     author = 'Jingchao Hu(observerss)',
     author_email = 'jingchaohu@gmail.com',
     packages = ['pygodaddy'],
     package_data={'': ['LICENSE']},
     package_dir = {'pygodaddy':'pygodaddy'},
-    install_requries = ['requests'],
+    install_requires = ['requests>=1.2.3'],
     license = open('LICENSE').read(),
     classifiers=(
         'Development Status :: 4 - Beta',
