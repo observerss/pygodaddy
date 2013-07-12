@@ -26,7 +26,7 @@ import random
 account = random.choice(accounts)
 
 from nose import with_setup
-from src import GoDaddyClient, GoDaddyAccount
+from pygodaddy import GoDaddyClient, GoDaddyAccount
 
 client = None
 

@@ -17,7 +17,6 @@
 # -*- coding: utf-8 -*-
 
 from collections import defaultdict, namedtuple
-from contextlib import contextmanager
 
 import requests
 import logging
@@ -37,7 +36,7 @@ class GoDaddyAccount(object):
 
     Usage:
 
-    >>> from libgodaddy import GoDaddyAccount
+    >>> from pygodaddy import GoDaddyAccount
     >>> with GoDaddyAccount(username, password) as client:
     ...    client.update_dns_record('sub1.exmaple.com', '1.2.3.4') 
     ...    client.update_dns_record('sub2.exmaple.com', '1.2.3.5') 
@@ -63,7 +62,7 @@ class GoDaddyClient(object):
 
     Typical Usage:
 
-    >>> from libgodaddy import GoDaddyClient
+    >>> from pygodaddy import GoDaddyClient
     >>> client = GoDaddyClient()
     >>> if client.login(username, password):
     ...     client.update_dns_record('sub.example.com', '1.2.3.4')

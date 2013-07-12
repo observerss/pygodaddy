@@ -1,4 +1,4 @@
-libgodaddy
+pygodaddy
 ==========
 
 3rd Party Client Library for Manipulating Go Daddy DNS Records.
@@ -14,7 +14,7 @@ QUICKSTART
 ----------
 
 ```python
-from libgodaddy import GoDaddyClient
+from pygodaddy import GoDaddyClient
 client = GoDaddyClient()
 if client.login(username, password):
     print client.find_domains()
