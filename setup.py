@@ -16,8 +16,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import pygodaddy
-
 try:
     from setuptools import setup
 except ImportError:
@@ -25,7 +23,7 @@ except ImportError:
 
 setup(
     name='pygodaddy',
-    version = '0.1.4',
+    version = '0.1.5',
     description = '3rd Party Client Library for Manipulating Go Daddy DNS Records.',
     long_description=open('README.rst').read()+'\n\n'+open('HISTORY.rst').read(),
     url = 'https://github.com/observerss/pygodaddy',
