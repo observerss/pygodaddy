@@ -1,6 +1,10 @@
 pygodaddy
 ==========
 
+.. image:: https://travis-ci.org/observerss/pygodaddy.png?branch=master
+        :target: https://travis-ci.org/observerss/pygodaddy
+
+
 PyGoDaddy is a 3rd-party client library, written in Python, for site admins(devs), to make GoDaddy suck less. 
 
 Currently, Only A-Record manipulation is supported
