@@ -81,7 +81,7 @@ class GoDaddyClient(object):
         :returns: `True` if there's welcome message, else `False`
         """
         if html is None:
-            html = self.session.get(self.default_url).content
+            html = self.session.get(self.default_url).text
         self.logged_in = bool(re.compile(r'Welcome:&nbsp;<span id="ctl00_lblUser" .*?\>(.*)</span>').search(html))
         return self.logged_in
         
@@ -95,9 +95,9 @@ class GoDaddyClient(object):
         """
         r = self.session.get(self.default_url)
         try:
-            viewstate = re.compile(r'id="__VIEWSTATE" value="([^"]+)"').search(r.content).group(1)
+            viewstate = re.compile(r'id="__VIEWSTATE" value="([^"]+)"').search(r.text).group(1)
         except:
-            logger.error('Login routine broken, godaddy may have updated their login mechanism')
+            logger.exception('Login routine broken, godaddy may have updated their login mechanism')
             return False
         data = {
                 'Login$userEntryPanel2$LoginImageButton.x' : 0,
@@ -107,11 +107,11 @@ class GoDaddyClient(object):
                 '__VIEWSTATE': viewstate,
         }
         r = self.session.post(r.url, data=data)
-        return self.is_loggedin(r.content)
+        return self.is_loggedin(r.text)
 
     def find_domains(self):
         """ return all domains of user """
-        html = self.session.get(self.default_url).content
+        html = self.session.get(self.default_url).text
         return re.compile(r'''GoToZoneEdit\('([^']+)''').findall(html)
     
     def find_dns_records(self, domain, record_type='A'):
@@ -120,12 +120,12 @@ class GoDaddyClient(object):
         :param domain: a typical domain name, e.g. "example.com"
         :returns: a dict of (hostname -> DNSRecord)
         """
-        html = self.session.get(self.zonefile_url.format(domain=domain)).content
+        html = self.session.get(self.zonefile_url.format(domain=domain)).text
         pattern = r'''Undo{rt}Edit\('tbl{rt}Records_([0-9]+)', '([^']+)', '([^']+)', '([^']+)', '([^']+)', '([^']+)', '([^']+)'\)'''.format(rt=record_type)
         try:
             results = map(DNSRecord._make, re.compile(pattern).findall(html))
         except:
-            logger.error('find domains broken, maybe godaddy has changed its web structure')
+            logger.exception('find domains broken, maybe godaddy has changed its web structure')
             return []
         return results
 
@@ -204,22 +204,22 @@ class GoDaddyClient(object):
         """ delete old record, return `True` if successful """
         data = {'sInput':"{index}|true".format(index=index)} 
         r = self.session.post(self.zonefile_ws_url + '/Flag{rt}RecForDeletion'.format(rt=record_type), data=data)
-        return 'SUCCESS' in r.content
+        return 'SUCCESS' in r.text
 
     def _add_record(self, prefix, value, index, record_type='A'):
         """ add new record, return `True` if successful """
         data = {'sInput':'<PARAMS><PARAM name="lstIndex" value="{index}" /><PARAM name="host" value="{prefix}" /><PARAM name="pointsTo" value="{value}" /><PARAM name="ttl" value="600" /></PARAMS>'.format(index=index, prefix=prefix, value=value)}
         r = self.session.post(self.zonefile_ws_url + '/AddNew{rt}Record'.format(rt=record_type), data=data)
-        return 'SUCCESS' in r.content
+        return 'SUCCESS' in r.text
 
     def _edit_record(self, index, value, record_type='A'):
         """ set value of record on `index` to `value`, return `True` if successful """
         data = {'sInput' : '<PARAMS><PARAM name="type" value="{rt}record" /><PARAM name="fieldName" value="data" /><PARAM name="fieldValue" value="{value}" /><PARAM name="lstIndex" value="{index}" /></PARAMS>'.format(value=value, index=index, rt=record_type.lower())}
         r = self.session.post(self.zonefile_ws_url + '/EditRecordField', data=data)
-        return 'SUCCESS' in r.content
+        return 'SUCCESS' in r.text
 
     def _save_records(self, domain, index, record_type='A'):
         """ save edit of `index` of `domain` """
         data = {'sInput' : '<PARAMS><PARAM name="domainName" value="{domain}" /><PARAM name="zoneType" value="0" /><PARAM name="{rt}RecEditCount" value="1" /><PARAM name="{rt}RecEdit0Index" value="{index}" /></PARAMS>'.format(domain=domain, index=index, rt=record_type.lower())}
         r = self.session.post(self.zonefile_ws_url + '/SaveRecords', data=data)
-        return 'SUCCESS' in r.content
+        return 'SUCCESS' in r.text
