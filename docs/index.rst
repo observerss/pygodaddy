@@ -26,24 +26,28 @@ To install pygodaddy, simply:
 Quick Start
 -----------
 
-Package Tastes below
+First, import and initiate ``GoDaddyClient``
 
 .. code-block:: python
 
     from pygodaddy import GoDaddyClient
     client = GoDaddyClient()
+
+Then we can use ``login`` method to login, and ``update_dns_record`` method to update dns record (A-Record Only)
+
+.. code-block:: python
+
     if client.login(username, password):
-        print client.find_domains()
         client.update_dns_record('sub.example.com', '1.2.3.4')
 
+A list of methods and be found in :ref:`api-documents` section below
+
+.. _api-documents:
 
 API Documents
 -------------
 
-.. autoclass:: pygodaddy.GoDaddyClient
-    :members:
-
-.. autoclass:: pygodaddy.GoDaddyAccount
+.. automodule:: pygodaddy.client
     :members:
 
 Indices and tables
