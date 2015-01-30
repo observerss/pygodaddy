@@ -21,6 +21,7 @@ from collections import defaultdict, namedtuple
 import requests
 import logging
 import re
+import time
 
 __all__  = ['LoginError', 'GoDaddyClient', 'GoDaddyAccount']
 
@@ -73,6 +74,7 @@ class GoDaddyClient(object):
         self.zonefile_url = 'https://dns.godaddy.com/ZoneFile.aspx?zoneType=0&sa=&zone={domain}'
         self.zonefile_ws_url = 'https://dns.godaddy.com/ZoneFile_WS.asmx'
         self.session = requests.Session()
+        self.sec=""
 
     def is_loggedin(self, html=None):
         """ Test login according to returned html, then set value to self.logged_in
@@ -120,7 +122,12 @@ class GoDaddyClient(object):
         :param domain: a typical domain name, e.g. "example.com"
         :returns: a dict of (hostname -> DNSRecord)
         """
-        html = self.session.get(self.zonefile_url.format(domain=domain)).text
+        html = self.session.get(self.zonefile_url.format(domain=domain)).content
+
+        #Update the security token while we're at it.
+        sec_pattern = 'nonce=\"([0-9A-Za-z]+)\"'
+        self.sec = re.compile(sec_pattern).findall(html)[0]
+
         pattern = r'''Undo{rt}Edit\('tbl{rt}Records_([0-9]+)', '([^']+)', '([^']+)', '([^']+)', '([^']+)', '([^']+)', '([^']+)'\)'''.format(rt=record_type)
         try:
             results = map(DNSRecord._make, re.compile(pattern).findall(html))
@@ -149,6 +156,7 @@ class GoDaddyClient(object):
                 if record.value != value:
                     if not self._edit_record(value=value, index=record.index, record_type=record_type):
                         return False
+                    time.sleep(1) # godaddy seems to reject the save if there isn't a pause here
                     if not self._save_records(domain=domain, index=record.index, record_type=record_type):
                         return False
                     return True
@@ -161,6 +169,7 @@ class GoDaddyClient(object):
                 
                 if not self._add_record(prefix=prefix, value=value, index=index, record_type=record_type):
                     return False
+                time.sleep(1)# godaddy seems to reject the save if there isn't a pause here
                 if not self._save_records(domain=domain, index=index, record_type=record_type):
                     return False
                 return True
@@ -178,11 +187,12 @@ class GoDaddyClient(object):
             raise NotImplementedError('Only A Record Update is supported for now')
 
         prefix, domain = self._split_hostname(hostname)
-        
+
         for record in self.find_dns_records(domain, record_type):
             if record.hostname == prefix:
                 if not self._delete_record(record.index, record_type=record_type):
                     return False
+                time.sleep(1)# godaddy seems to reject the save if there isn't a pause here
                 if not self._save_records(domain=domain, index=record.index, record_type=record_type):
                     return False
                 return True
@@ -220,6 +230,15 @@ class GoDaddyClient(object):
 
     def _save_records(self, domain, index, record_type='A'):
         """ save edit of `index` of `domain` """
-        data = {'sInput' : '<PARAMS><PARAM name="domainName" value="{domain}" /><PARAM name="zoneType" value="0" /><PARAM name="{rt}RecEditCount" value="1" /><PARAM name="{rt}RecEdit0Index" value="{index}" /></PARAMS>'.format(domain=domain, index=index, rt=record_type.lower())}
+        string = ('<PARAMS>'
+                  '<PARAM name="domainName" value="{domain}" />'
+                  '<PARAM name="zoneType" value="0" />'
+                  '<PARAM name="aRecEditCount" value="1" />'
+                  '<PARAM name="aRecEdit0Index" value="{index}" />'
+                  '<PARAM name="nonce" value="{nonce}" />'
+                  '</PARAMS>')
+
+        string=string.format(domain=domain, index=index,nonce=self.sec)
+        data = {'sInput' : string}
         r = self.session.post(self.zonefile_ws_url + '/SaveRecords', data=data)
         return 'SUCCESS' in r.text
