@@ -23,7 +23,7 @@ except ImportError:
 
 setup(
     name='pygodaddy',
-    version = '0.1.6',
+    version = '0.1.7',
     description = '3rd Party Client Library for Manipulating Go Daddy DNS Records.',
     long_description=open('README.rst').read()+'\n\n'+open('HISTORY.rst').read(),
     url = 'https://github.com/observerss/pygodaddy',
