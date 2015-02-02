@@ -39,8 +39,8 @@ class GoDaddyAccount(object):
 
     >>> from pygodaddy import GoDaddyAccount
     >>> with GoDaddyAccount(username, password) as client:
-    ...    client.update_dns_record('sub1.exmaple.com', '1.2.3.4') 
-    ...    client.update_dns_record('sub2.exmaple.com', '1.2.3.5') 
+    ...    client.update_dns_record('sub1.exmaple.com', '1.2.3.4')
+    ...    client.update_dns_record('sub2.exmaple.com', '1.2.3.5')
     """
     def __init__(self, username, password):
         self.username = username
@@ -59,7 +59,7 @@ class GoDaddyAccount(object):
         return True
 
 class GoDaddyClient(object):
-    """ GoDaddy Client Library 
+    """ GoDaddy Client Library
 
     Typical Usage:
 
@@ -78,7 +78,7 @@ class GoDaddyClient(object):
 
     def is_loggedin(self, html=None):
         """ Test login according to returned html, then set value to self.logged_in
-        
+
         :param html: the html content returned by self.session.get/post
         :returns: `True` if there's welcome message, else `False`
         """
@@ -86,11 +86,11 @@ class GoDaddyClient(object):
             html = self.session.get(self.default_url).text
         self.logged_in = bool(re.compile(r'Welcome:&nbsp;<span id="ctl00_lblUser" .*?\>(.*)</span>').search(html))
         return self.logged_in
-        
+
 
     def login(self, username, password):
         """ Login to a godaddy account
-        
+
         :param username: godaddy username
         :param password: godaddy password
         :returns:  `True` if login is successful, else `False`
@@ -115,10 +115,10 @@ class GoDaddyClient(object):
         """ return all domains of user """
         html = self.session.get(self.default_url).text
         return re.compile(r'''GoToZoneEdit\('([^']+)''').findall(html)
-    
+
     def find_dns_records(self, domain, record_type='A'):
         """ find all dns reocrds of a given domain
-        
+
         :param domain: a typical domain name, e.g. "example.com"
         :returns: a dict of (hostname -> DNSRecord)
         """
@@ -138,7 +138,7 @@ class GoDaddyClient(object):
 
     def update_dns_record(self, hostname, value, record_type='A', new=True):
         """ Update a dns record
-        
+
         :param hostname: hostname to update
         :param value: value for hostname to point to, for A record, it's like 'XX.XX.XX.XX'
         :param record_type: only 'A' is implemented for now
@@ -147,9 +147,9 @@ class GoDaddyClient(object):
         """
         if record_type != 'A':
             raise NotImplementedError('Only A Record Update is supported for now')
-        
+
         prefix, domain = self._split_hostname(hostname)
-    
+
         records = self.find_dns_records(domain, record_type)
         for record in records:
             if record.hostname == prefix:
@@ -162,23 +162,23 @@ class GoDaddyClient(object):
                     return True
                 break
         else:
-            # record.hostname == prefix not found 
+            # record.hostname == prefix not found
             if new:
                 # let's create a new record
                 index = int(records[-1].index)+1 if records else 0
-                
+
                 if not self._add_record(prefix=prefix, value=value, index=index, record_type=record_type):
                     return False
                 time.sleep(1)# godaddy seems to reject the save if there isn't a pause here
                 if not self._save_records(domain=domain, index=index, record_type=record_type):
                     return False
                 return True
-                
+
         return False
 
     def delete_dns_record(self, hostname, record_type='A'):
-        """ delete hostname in accounts 
-    
+        """ delete hostname in accounts
+
         :param hostname: hostname to be deleted
         :param record_type: only 'A' is implemented for now
         :returns: `True` if successful, else `False`
@@ -196,7 +196,7 @@ class GoDaddyClient(object):
                 if not self._save_records(domain=domain, index=record.index, record_type=record_type):
                     return False
                 return True
-            
+
         return False
 
     def _split_hostname(self, hostname):
@@ -212,7 +212,7 @@ class GoDaddyClient(object):
 
     def _delete_record(self, index, record_type='A'):
         """ delete old record, return `True` if successful """
-        data = {'sInput':"{index}|true".format(index=index)} 
+        data = {'sInput':"{index}|true".format(index=index)}
         r = self.session.post(self.zonefile_ws_url + '/Flag{rt}RecForDeletion'.format(rt=record_type), data=data)
         return 'SUCCESS' in r.text
 
