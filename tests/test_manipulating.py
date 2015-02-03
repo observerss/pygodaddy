@@ -31,7 +31,7 @@ from pygodaddy import GoDaddyClient, GoDaddyAccount
 client = None
 
 def test_login():
-    global client 
+    global client
     if client is None:
         client = GoDaddyClient()
     assert client.login(account['username'], account['password']), 'Login Failed'
@@ -41,14 +41,14 @@ def test_can_find_target_domain():
     if client is None:
         client = GoDaddyClient()
     assert account['test_domain'] in client.find_domains(), 'domain not found'
-    
+
 def test_can_update_dns_record():
     global client
     if client is None:
         client = GoDaddyClient()
     domain = account['test_domain']
     prefix = 'test{}'.format(random.randint(10000, 99999))
-    addr = '{}.{}.{}.{}'.format(random.randint(10, 20), random.randint(10, 20), 
+    addr = '{}.{}.{}.{}'.format(random.randint(10, 20), random.randint(10, 20),
                                 random.randint(10, 20), random.randint(10, 20))
     addr2 = '{}.{}.{}.{}'.format(random.randint(20, 30), random.randint(20, 30), \
                                 random.randint(20, 30), random.randint(20, 30))
