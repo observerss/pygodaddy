@@ -202,7 +202,9 @@ class GoDaddyClient(object):
     def _split_hostname(self, hostname):
         """ split hostname into prefix + domain """
         try:
-            prefix, name, postfix = hostname.rsplit('.', 2)
+	    # using partition instead of split to account for hostnames with more than three .'s
+	    prefix, _, temp = hostname.partition('.')
+	    name, _, postfix = temp.partition('.')
             domain = name + '.' + postfix
         except:
             domain = hostname
