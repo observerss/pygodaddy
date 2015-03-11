@@ -22,6 +22,7 @@ import requests
 import logging
 import re
 import time
+import tldextract
 
 __all__  = ['LoginError', 'GoDaddyClient', 'GoDaddyAccount']
 
@@ -201,16 +202,12 @@ class GoDaddyClient(object):
 
     def _split_hostname(self, hostname):
         """ split hostname into prefix + domain """
-        try:
-	    # using partition instead of split to account for hostnames with more than three .'s
-	    prefix, _, temp = hostname.partition('.')
-	    name, _, postfix = temp.partition('.')
-            domain = name + '.' + postfix
-        except:
-            domain = hostname
+        ext = tldextract.extract(hostname)
+        prefix = ext.subdomain
+        domain = ext.registered_domain
+        if not prefix:
             prefix = '@'
-
-        return  prefix, domain
+        return prefix, domain
 
     def _delete_record(self, index, record_type='A'):
         """ delete old record, return `True` if successful """
