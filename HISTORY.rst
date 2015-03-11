@@ -1,3 +1,8 @@
+0.2.0 (2015-03-11)
+++++++++++++++++++
+
+* Added logging messages to add, delete, edit, save, and update methods
+
 0.1.9 (2015-03-11)
 ++++++++++++++++++
 

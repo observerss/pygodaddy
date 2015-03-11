@@ -161,6 +161,7 @@ class GoDaddyClient(object):
                     if not self._save_records(domain=domain, index=record.index, record_type=record_type):
                         return False
                     return True
+                logger.info('Update was not required.')
                 break
         else:
             # record.hostname == prefix not found
@@ -213,19 +214,28 @@ class GoDaddyClient(object):
         """ delete old record, return `True` if successful """
         data = {'sInput':"{index}|true".format(index=index)}
         r = self.session.post(self.zonefile_ws_url + '/Flag{rt}RecForDeletion'.format(rt=record_type), data=data)
-        return 'SUCCESS' in r.text
+        if not 'SUCCESS' in r.text:
+            logger.error('Failed to delete record, has the website changed?')
+            return False
+        return True
 
     def _add_record(self, prefix, value, index, record_type='A'):
         """ add new record, return `True` if successful """
         data = {'sInput':'<PARAMS><PARAM name="lstIndex" value="{index}" /><PARAM name="host" value="{prefix}" /><PARAM name="pointsTo" value="{value}" /><PARAM name="ttl" value="600" /></PARAMS>'.format(index=index, prefix=prefix, value=value)}
         r = self.session.post(self.zonefile_ws_url + '/AddNew{rt}Record'.format(rt=record_type), data=data)
-        return 'SUCCESS' in r.text
+        if not 'SUCCESS' in r.text:
+            logger.error('Failed to add record, has the website changed?')
+            return False
+        return True
 
     def _edit_record(self, index, value, record_type='A'):
         """ set value of record on `index` to `value`, return `True` if successful """
         data = {'sInput' : '<PARAMS><PARAM name="type" value="{rt}record" /><PARAM name="fieldName" value="data" /><PARAM name="fieldValue" value="{value}" /><PARAM name="lstIndex" value="{index}" /></PARAMS>'.format(value=value, index=index, rt=record_type.lower())}
         r = self.session.post(self.zonefile_ws_url + '/EditRecordField', data=data)
-        return 'SUCCESS' in r.text
+        if not 'SUCCESS' in r.text:
+            logger.error('Failed to edit record, has the website changed?')
+            return False
+        return True
 
     def _save_records(self, domain, index, record_type='A'):
         """ save edit of `index` of `domain` """
@@ -240,4 +250,8 @@ class GoDaddyClient(object):
         string=string.format(domain=domain, index=index,nonce=self.sec)
         data = {'sInput' : string}
         r = self.session.post(self.zonefile_ws_url + '/SaveRecords', data=data)
-        return 'SUCCESS' in r.text
+        if not 'SUCCESS' in r.text:
+            logger.error('Failed to save records, has the website changed?')
+            return False
+        return True
+
