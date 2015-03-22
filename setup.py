@@ -32,7 +32,7 @@ setup(
     packages = ['pygodaddy'],
     package_data={'': ['LICENSE']},
     package_dir = {'pygodaddy':'pygodaddy'},
-    install_requires = ['requests>=1.2.3'],
+    install_requires = ['requests>=1.2.3', 'tldextract>=1.5.1'],
     license = open('LICENSE').read(),
     classifiers=(
         'Development Status :: 4 - Beta',
