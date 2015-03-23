@@ -123,13 +123,13 @@ class GoDaddyClient(object):
         :param domain: a typical domain name, e.g. "example.com"
         :returns: a dict of (hostname -> DNSRecord)
         """
-        html = self.session.get(self.zonefile_url.format(domain=domain)).content
+        html = self.session.get(self.zonefile_url.format(domain=domain)).text
 
         #Update the security token while we're at it.
         sec_pattern = 'nonce=\"([0-9A-Za-z]+)\"'
         self.sec = re.compile(sec_pattern).findall(html)[0]
 
-        pattern = r'''Undo{rt}Edit\('tbl{rt}Records_([0-9]+)', '([^']+)', '([^']+)', '([^']+)', '([^']+)', '([^']+)', '([^']+)'\)'''.format(rt=record_type)
+        pattern = "Undo{rt}Edit\\('tbl{rt}Records_([0-9]+)', '([^']+)', '([^']+)', '([^']+)', '([^']+)', '([^']+)', '([^']+)'\\)".format(rt=record_type)
         try:
             results = map(DNSRecord._make, re.compile(pattern).findall(html))
         except:
@@ -151,7 +151,7 @@ class GoDaddyClient(object):
 
         prefix, domain = self._split_hostname(hostname)
 
-        records = self.find_dns_records(domain, record_type)
+        records = list(self.find_dns_records(domain, record_type))
         for record in records:
             if record.hostname == prefix:
                 if record.value != value:

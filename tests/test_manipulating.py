@@ -17,7 +17,7 @@
 # -*- coding: utf-8 -*-
 
 try:
-    from accounts import accounts
+    from .accounts import accounts
 except:
     # no accounts avaible, quit testing
     exit(0)
