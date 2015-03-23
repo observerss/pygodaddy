@@ -21,11 +21,9 @@ try:
 except ImportError:
     from distutils.core import setup
 
-from pygodaddy import __version__
-
 setup(
     name='pygodaddy',
-    version = __version__,
+    version = '0.2.1',
     description = '3rd Party Client Library for Manipulating Go Daddy DNS Records.',
     long_description=open('README.rst').read()+'\n\n'+open('HISTORY.rst').read(),
     url = 'https://github.com/observerss/pygodaddy',
